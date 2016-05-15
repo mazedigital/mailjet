@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension id="mailjet" status="beta" xmlns="http://getsymphony.com/schemas/extension/1.0">
+	<name>MailJet</name>
+	<description>Mailjet extension for Symphony - syncing up lists and email api</description>
+	<repo type="github">https://github.com/mazedigital/mailjet</repo>
+	<url type="discuss" />
+	<types>
+		<type>Email</type>
+	</types>
+	<authors>
+		<author>
+			<name github="jonmifsud" symphony="gunglien">Jon Mifsud</name>
+			<website>http://maze.digital</website>
+		</author>
+	</authors>
+	<releases>
+		<release version="0.1.0" date="2016-05-15" min="2.6.x">
+			- First Release
+		</release>
+	</releases>
+</extension>
