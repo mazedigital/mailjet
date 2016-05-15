@@ -16,15 +16,21 @@ use \Mailjet\Resources;
  */
 class MailjetGateway extends EmailGateway
 {
-    protected $_SMTP;
-    protected $_host;
-    protected $_port;
-    protected $_protocol = 'tcp';
-    protected $_secure = 'no';
-    protected $_auth = false;
-    protected $_user;
-    protected $_pass;
+    protected $_bulk = false;
+    protected $_messages = array();
     protected $_envelope_from;
+
+    /**
+     * Sets the bulk status of email; if bulk is true emails will be sent in groups of 50 or on connection close
+     * Particularly useful for ENM
+     *
+     * @param boolean $bulk
+     */
+    public function setBulk($bulk)
+    {
+        $this->_bulk = $bulk;
+    }
+
 
     /**
      * Returns the name, used in the dropdown menu in the preferences pane.
@@ -70,54 +76,73 @@ class MailjetGateway extends EmailGateway
                 );
         }
 
+        $body = [
+            // 'FromEmail' => "pilot@mailjet.com",
+            // 'FromEmail' => $this->_reply_to_email_address,
+            'FromEmail' => $this->_sender_email_address,
+            'FromName' => $this->_sender_name,
+            'Subject' => $this->_subject,
+            'Text-part' => $this->_text_plain,
+            'Html-part' => $this->_text_html,
+            'Recipients' => $recipients,
+            'Headers' => []
+        ];
+
+        //Attachments
+        //Inline_attachments
+        //Mj-campaign
+
+        // var_dump($body);die;
+
+        // Build the 'Reply-To' header field body
+        // headers need to be a json object
+        if (!empty($this->_reply_to_email_address)) {
+            $reply_to = empty($this->_reply_to_name)
+                        ? $this->_reply_to_email_address
+                        : $this->_reply_to_name . ' <'.$this->_reply_to_email_address.'>';
+
+            $body["Headers"]["Reply-To"] = $reply_to;
+        }
+
+        if (empty($body["Headers"])){
+            unset($body["Headers"]);
+        } else {
+            $body["Headers"] = json_encode($body["Headers"]);
+        }
+
+
         try {
+            $driver = ExtensionManager::getInstance('Mailjet');
 
-            $body = [
-                // 'FromEmail' => "pilot@mailjet.com",
-                // 'FromEmail' => $this->_reply_to_email_address,
-                'FromEmail' => $this->_sender_email_address,
-                'FromName' => $this->_sender_name,
-                'Subject' => $this->_subject,
-                'Text-part' => $this->_text_plain,
-                'Html-part' => $this->_text_html,
-                'Recipients' => $recipients,
-                'Headers' => []
-            ];
-
-            //Attachments
-            //Inline_attachments
-            //Mj-campaign
-
-            // var_dump($body);die;
-
-            // Build the 'Reply-To' header field body
-            // headers need to be a json object
-            if (!empty($this->_reply_to_email_address)) {
-                $reply_to = empty($this->_reply_to_name)
-                            ? $this->_reply_to_email_address
-                            : $this->_reply_to_name . ' <'.$this->_reply_to_email_address.'>';
-
-                $body["Headers"]["Reply-To"] = $reply_to;
-            }
-
-            if (empty($body["Headers"])){
-                unset($body["Headers"]);
+            if ($this->_bulk){
+                $driver->addBulkMessage($body);
+                // $this->_messages[] = $body;
+                // if (sizeof($this->_messages == 50)){
+                //     $this->sendBulk;
+                // }
             } else {
-                $body["Headers"] = json_encode($body["Headers"]);
+
+                // $response = $driver->getLists();
+                $response = $driver->send(['body' => $body]);
+                // var_dump($response->success());die;
+
+                $this->reset();
             }
-
-            $driver = ExtensionManager::create('Mailjet');
-
-            // $response = $driver->getLists();
-            $response = $driver->send(['body' => $body]);
-            // var_dump($response->success());die;
-
-            $this->reset();
         } catch (Exception $e) {
             throw new EmailGatewayException($e->getMessage());
         }
 
         return true;
+    }
+
+    public function closeConnection(){
+        try {
+            $driver = ExtensionManager::getInstance('Mailjet');
+            $driver->triggerBulkSend();
+        } catch (Exception $e) {
+            throw new EmailGatewayException($e->getMessage());
+        }
+
     }
 
     /**
@@ -132,6 +157,7 @@ class MailjetGateway extends EmailGateway
         $this->_recipients = array();
         $this->_subject = null;
         $this->_body = null;
+        $this->_messages = array();
     }
 
     /**

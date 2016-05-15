@@ -12,6 +12,8 @@
 		private $apiContext;
 		private $clientId;
 		private $clientSecret;
+		private $messages = array();
+
 		public function __construct() {
 			// die('construct');
 			$this->apiKey = Symphony::Configuration()->get('api-key','mailjet');
@@ -94,6 +96,25 @@
 			$response = $this->mj->post(Resources::$Email, $data);
 			// var_dump($response->success());
 			// var_dump($response->getReasonPhrase());die;
+			return $response->getData();
+		}
+
+		public function addBulkMessage($data){
+			$this->messages[] = $data;
+			if (sizeof($this->messages) == 50){
+				return $this->triggerBulkSend();
+			}
+		}
+
+		public function triggerBulkSend(){
+			$response = $this->mj->post(Resources::$Email, array('Body'=>['Messages'=>$this->messages]));
+			// $response = $this->mj->post(Resources::$Email, array('Body'=>$this->messages[0]));
+
+			//empty messages array
+			$this->messages = array();
+
+
+
 			return $response->getData();
 		}
 
