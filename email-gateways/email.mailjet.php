@@ -145,8 +145,6 @@ class MailjetGateway extends EmailGateway
 
                 // $response = $driver->getLists();
                 $response = $driver->send(['body' => $body]);
-                var_dump($body);die('aloha');
-                var_dump($response);die('aloha');
 
                 $this->reset();
             }
