@@ -15,15 +15,8 @@ namespace Mailjet;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 
-/**
- * This is the Mailjet Request class
- * @category Mailjet_API
- * @package  Mailjet-apiv3
- * @author Guillaume Badi <gbadi@mailjet.com>
- * @license MIT https://licencepath.com
- * @link http://link.com
- */
 class Request extends GuzzleClient
 {
     private $method;
@@ -71,16 +64,18 @@ class Request extends GuzzleClient
             'auth' => $this->auth,
             ($this->type === 'application/json' ? 'json' : 'body') => $this->body,
         ];
-
         $response = null;
         if ($call) {
             try {
                 $response = call_user_func_array(
-                    array($this, strtolower($this->method)), [
-                    $this->url, $payload]
+                    [$this, strtolower($this->method)],
+                    [$this->url, $payload]
                 );
             }
             catch (ClientException $e) {
+                $response = $e->getResponse();
+            }
+            catch (ServerException $e) {
                 $response = $e->getResponse();
             }
         }

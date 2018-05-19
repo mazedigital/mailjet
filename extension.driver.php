@@ -18,7 +18,7 @@
 			// die('construct');
 			$this->apiKey = Symphony::Configuration()->get('api-key','mailjet');
 			$this->secretKey = Symphony::Configuration()->get('secret-key','mailjet');
-			$this->mj = new \Mailjet\Client($this->apiKey, $this->secretKey);
+			$this->mj = new \Mailjet\Client($this->apiKey, $this->secretKey,true,['version' => 'v3.1']);
 		}
 
 		public function getApiContext(){
@@ -94,7 +94,7 @@
 
 		public function send($data){
 			$response = $this->mj->post(Resources::$Email, $data);
-			// var_dump($response->success());
+			// var_dump($response);
 			// var_dump($response->getReasonPhrase());die;
 			return $response->getData();
 		}

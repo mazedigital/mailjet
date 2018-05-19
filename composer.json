@@ -1,8 +1,8 @@
 {
-	"name": "mazedigital/paypal",
+	"name": "mazedigital/mailjet",
     "version": "1.0",
     "description": "Symphony MailJet Extension.",
-    "homepage": "https://github.com/mazedigital/paypal",
+    "homepage": "https://github.com/mazedigital/mailjet",
     "license": "MIT",
     "authors": [
         {

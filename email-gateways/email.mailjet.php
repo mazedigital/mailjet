@@ -76,17 +76,51 @@ class MailjetGateway extends EmailGateway
                 );
         }
 
+        $replyTo = null;
+
+
+        if (!empty($this->_reply_to_email_address)) {
+            $replyTo = array(
+                    'Email' => $this->_reply_to_email_address,
+                    'Name' => $this->_reply_to_name
+            );
+        };
+
+        $emailDetails = [
+
+                        'From' => [
+                            'Email' => $this->_sender_email_address,
+                            'Name' => $this->_sender_name
+                        ],
+                        // 'FromEmail' => $this->_sender_email_address,
+                        // 'FromName' => $this->_sender_name,
+                        'Subject' => $this->_subject,
+                        // 'TextPart' => $this->_text_plain,
+                        // 'HTMLPart' => $this->_text_html,
+                        'To' => $recipients
+                        // 'ReplyTo' => $replyTo,
+                        // 'Headers' => []
+
+                    ];
+
+        if (!empty($replyTo)){
+            $emailDetails['ReplyTo'] = $replyTo;
+        }
+
+        if (!empty($this->_text_plain)){
+            $emailDetails['TextPart'] = $this->_text_plain;
+        }
+
+        if (!empty($this->_text_html)){
+            $emailDetails['HTMLPart'] = $this->_text_html;
+        }
+
         $body = [
-            // 'FromEmail' => "pilot@mailjet.com",
-            // 'FromEmail' => $this->_reply_to_email_address,
-            'FromEmail' => $this->_sender_email_address,
-            'FromName' => $this->_sender_name,
-            'Subject' => $this->_subject,
-            'Text-part' => $this->_text_plain,
-            'Html-part' => $this->_text_html,
-            'Recipients' => $recipients,
-            'Headers' => []
+            'Messages' => [
+                    $emailDetails
+            ]
         ];
+
 
         //Attachments
         //Inline_attachments
@@ -96,19 +130,6 @@ class MailjetGateway extends EmailGateway
 
         // Build the 'Reply-To' header field body
         // headers need to be a json object
-        if (!empty($this->_reply_to_email_address)) {
-            $reply_to = empty($this->_reply_to_name)
-                        ? $this->_reply_to_email_address
-                        : $this->_reply_to_name . ' <'.$this->_reply_to_email_address.'>';
-
-            $body["Headers"]["Reply-To"] = $reply_to;
-        }
-
-        if (empty($body["Headers"])){
-            unset($body["Headers"]);
-        } else {
-            $body["Headers"] = json_encode($body["Headers"]);
-        }
 
 
         try {
@@ -124,7 +145,8 @@ class MailjetGateway extends EmailGateway
 
                 // $response = $driver->getLists();
                 $response = $driver->send(['body' => $body]);
-                // var_dump($response->success());die;
+                var_dump($body);die('aloha');
+                var_dump($response);die('aloha');
 
                 $this->reset();
             }

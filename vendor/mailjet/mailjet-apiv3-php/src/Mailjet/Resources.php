@@ -1,16 +1,4 @@
 <?php
-/**
- * PHP version 5
- *
- * This is the Mailjet Resources file
- *
- * @category Mailjet_API
- * @package  Mailjet-apiv3
- * @author   Guillaume Badi <gbadi@mailjet.com>
- * @license  MIT https://opensource.org/licenses/MIT
- * @link     dev.mailjet.com
- */
-
 namespace Mailjet;
 
 /**
@@ -26,7 +14,7 @@ namespace Mailjet;
  */
 class Resources
 {
-    public static $Email = ['send', ''];
+    public static $Email = ['send', ''/*, 'v3.1'*/];
     public static $Aggregategraphstatistics = ['aggregategraphstatistics', ''];
     public static $Apikey = ['apikey', ''];
     public static $Apikeyaccess = ['apikeyaccess', ''];
@@ -34,6 +22,8 @@ class Resources
     public static $Apitoken = ['apitoken', ''];
     public static $Axtesting = ['axtesting', ''];
     public static $Batchjob = ['batchjob', ''];
+    public static $BatchjobCsverror = ['batchjob', 'csverror/text:csv'];
+    public static $BatchjobJsonerror = ['batchjob', 'JSONError/application:json/LAST'];
     public static $Bouncestatistics = ['bouncestatistics', ''];
     public static $Campaign = ['campaign', ''];
     public static $Campaignaggregate = ['campaignaggregate', ''];
