@@ -35,18 +35,18 @@
 			// 	`refresh_token` VARCHAR(255) NOT NULL
 			// PRIMARY KEY (`user_id`,`system`)
 			// )ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-			
+
 			return true;
 		}
-		
+
 		/**
 		 * Update
 		 */
-		public function update() {
+		public function update($previousVersion = false) {
 			$this->install();
 		}
 
-		
+
 		public function getSubscribedDelegates() {
 			return array(
 				array(
@@ -142,7 +142,7 @@
 					'body' => $body,
 					'id' => $sectionConfig['id']
 				]);
-				
+
 			}
 		}
 
@@ -199,7 +199,7 @@
 			$fields = array();
 
 			$entry_xml->setAttribute('id', $entry->get('id'));
-			
+
 			//Add date created and edited values
 			$date = new XMLElement('system-date');
 
